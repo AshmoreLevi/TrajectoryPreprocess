@@ -98,7 +98,7 @@ def process_trajectory_data(input_folder, output_folder, filter_function):
 
 def filter_function(trajectory_points):
     """筛选条件函数"""
-    if len(trajectory_points) < 32 or len(trajectory_points) > 64:
+    if len(trajectory_points) < 32 or len(trajectory_points) > 48:
         return False
 
     timestamps = [int(point[2]) for point in trajectory_points]

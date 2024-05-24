@@ -34,10 +34,10 @@ def statistics(traj_dir):
             nb_pts = len(traj.pt_list)
             tot_pts += nb_pts
             seq_len_data.append(nb_pts)
-            length_data.append(traj.get_length() / 1000.0)
+            length_data.append(traj.get_distance() / 1000.0)
             duration_data.append(traj.get_duration() / 60.0)
-            traj_avg_time_interval_data.append(traj.get_time_interval())
-            traj_avg_dist_interval_data.append(traj.get_distance_interval())
+            traj_avg_time_interval_data.append(traj.get_avg_time_interval())
+            traj_avg_dist_interval_data.append(traj.get_avg_distance_interval())
     print('#objects:{}'.format(len(oids)))
     print('#points:{}'.format(tot_pts))
     print('#trajectories:{}'.format(tot_trajs))

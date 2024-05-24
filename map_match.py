@@ -7,6 +7,10 @@ import argparse
 from utils.parse_trajs import ParseRawTraj
 from utils.save_trajs import SaveTraj2MM
 
+"""
+nohup python -u map_match.py > mm0524.txt 2>&1 & 
+"""
+
 
 def mm_traj2rn(clean_traj_dir, mm_traj_dir, rn_path):
     rn = load_rn_shp(rn_path, is_directed=True)
@@ -34,7 +38,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--clean_traj_dir', default=f'data/cleaned_data/{city}/cleaned_{city}', help='the directory of the cleaned trajectories')
     parser.add_argument('--mm_traj_dir', default=f'data/mm_data/{city}/mm_{city}',help= "map matched trajs dir")
-    parser.add_argument('--rn_path', default=f'map/{city}')
+    parser.add_argument('--rn_path', default=f'data/map/{city}')
     opt = parser.parse_args()
     print(opt)
 

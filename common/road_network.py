@@ -5,6 +5,7 @@ from .spatial_func import SPoint, distance
 from .mbr import MBR
 import copy
 import json
+import os
 
 # 字符串到数字的转化规则
 candi_highway_types = {
@@ -178,13 +179,14 @@ def load_rn_shp(path, is_directed=True):
     else:
         return RoadNetwork(g, edge_spatial_idx, edge_idx)
 
-def process_and_save_rn(path, mbr, is_directed=True):
+def process_and_save_rn(path, mbr, root_dir, is_directed=True):
     # 创建空间索引和边索引
     edge_spatial_idx = Rtree()
     edge_idx = {}
     res_dict = {}
     raw2rn_dict = {}
     rn2raw_dict = {}
+    raw_rn_dict = {}
     valid_edge_count = 0
     
     # 从shapefile中读取图形
@@ -218,13 +220,23 @@ def process_and_save_rn(path, mbr, is_directed=True):
         edge_spatial_idx.insert(data['eid'], (env[0], env[2], env[1], env[3]))
         edge_idx[data['eid']] = (u, v)
         
+        # 转换 'level' 字段
+        highway_type = data['highway']
+        if highway_type in candi_highway_types:
+            data['level'] = candi_highway_types[highway_type]
+        else:
+            data['level'] = 0  # 默认值，如果类型不在字典中
+
         # 存储边信息
         eid = data['eid']
         res_dict[eid] = {
             'coords': res_coords,
             'length': data['length'],
-            'level': data['highway']
+            'level': data['level']
         }
+
+        # 存储原始边信息
+        raw_rn_dict[eid] = res_dict[eid]
         
         # 删除不必要的数据
         del data['ShpName']
@@ -254,23 +266,30 @@ def process_and_save_rn(path, mbr, is_directed=True):
         
         valid_edge_count += 1
     
+    # 构建文件路径
+    valid_rn_dict_path = os.path.join(root_dir, 'valid_rn_dict.json')
+    raw_rn_dict_path = os.path.join(root_dir, 'raw_rn_dict.json')
+    raw2rn_dict_path = os.path.join(root_dir, 'raw2rn_dict.json')
+    rn2raw_dict_path = os.path.join(root_dir, 'rn2raw_dict.json')
+
     # 将有效边字典写入JSON文件
-    with open('valid_rn_dict.json', 'w') as f:
+    with open(valid_rn_dict_path, 'w') as f:
         json.dump(valid_res_dict, f)
+
+    # 将原始边字典写入JSON文件
+    with open(raw_rn_dict_path, 'w') as f:
+        json.dump(raw_rn_dict, f)
     
     # 将原始边到有效边的映射写入JSON文件
-    with open('raw2rn_dict.json', 'w') as f:
+    with open(raw2rn_dict_path, 'w') as f:
         json.dump(raw2rn_dict, f)
     
     # 将有效边到原始边的映射写入JSON文件
-    with open('rn2raw_dict.json', 'w') as f:
+    with open(rn2raw_dict_path, 'w') as f:
         json.dump(rn2raw_dict, f)
     
     print('# of nodes:{}'.format(g.number_of_nodes()))
     print('# of edges:{}'.format(g.number_of_edges()))
-    
-    # 返回路网对象
-    return rn_raw
 
 def store_rn_shp(rn, target_path):
     print('# of nodes:{}'.format(rn.number_of_nodes()))

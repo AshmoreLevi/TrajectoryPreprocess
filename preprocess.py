@@ -1,5 +1,4 @@
 city = "Porto"
-scale = "small"
 
 from common.mbr import MBR
 from statistics_tools.statistics_cleaned import statistics
@@ -21,7 +20,7 @@ head -n 100 chengdu_csv/chengdushi_1001_1010.csv > test_csv/chengdu.csv
 
 用nohup跑clean:
 nohup python -u preprocess.py --clean_traj_dir 'data/Tdrive/cleaned_tdrive' --data_root_dir 'data/Tdrive/taxi_log_2008_by_id'> clean.txt 2>&1 & 
-nohup python -u preprocess.py --data_root_dir 'data/raw_data/Porto/porto_by_id' --clean_traj_dir 'data/cleaned_data/Porto/cleaned_porto' > clean.txt 2>&1 & 
+nohup python -u preprocess.py --data_root_dir 'data/raw_data/Porto/Porto_by_id' --clean_traj_dir 'data/cleaned_data/Porto/cleaned_Porto' > clean01.txt 2>&1 & 
 """
 
 def parse_tdrive(filename, tdrive_root_dir):
@@ -60,9 +59,9 @@ def do_clean_limit(raw_traj, filters, segmentations, min_duraion, max_duration):
 
     clean_traj_list = [traj for traj in clean_traj_list if min_duraion <= traj.get_duration() <= max_duration]
 
-    # 删除总点数少于32的轨迹, 删除总点数大于64的轨迹（因为最后的向下采样率为4倍数）
+    # 删除总点数少于32的轨迹, 删除总点数大于48的轨迹（因为最后的向下采样率为4倍数）
     # 根据数据集的平均采样率不同,不能简单地规定轨迹长度
-    clean_traj_list = [traj for traj in clean_traj_list if len(traj.pt_list) >= 32]
+    clean_traj_list = [traj for traj in clean_traj_list if 32 <= len(traj.pt_list) <= 48]
     
     return clean_traj_list
             
@@ -105,13 +104,13 @@ if __name__ == '__main__':
     # Tdrive:(2008, 2, 2) (2008, 2, 9)
     # Porto:(2013, 7, 1) (2014, 6, 30)
     # Chengdu:(2018, 9, 30)(2018, 11, 1)
-    start_time = datetime(2013, 7, 1)
+    start_time = datetime(2013, 7, 1) 
     end_time = datetime(2014, 6, 30)
 
     # 空间范围mbr
     # porto:(41.142, -8.652, 41.174, -8.578)
     # Tdrive:(39.9049, 116.3255, 39.9500, 116.4331)
-    # Chengdu:(30.6550, 104.0430, 30.7270, 104.1290)
+    # Chengdu:(30.655, 104.043, 30.727, 104.129)
     mbr_coords = (41.142, -8.652, 41.174, -8.578)
 
     # 最大速度（m/s）
@@ -126,12 +125,12 @@ if __name__ == '__main__':
     max_stay_time_min = 4
 
     # 平均间隔：interval
-    # 一段轨迹持续时间限制 interval * 32 ～ interval * 64 秒。
-    # Tdrive: (600, 1200)
+    # 一段轨迹持续时间限制 interval * 32 ～ interval * 48 秒。
+    # Tdrive: (600, 900)
     # Porto:(480, 1500)
     # Chengdu:(60, 300)
     min_duration = 600
-    max_duration = 1200
+    max_duration = 900
 
     if opt.phase == 'clean':
         clean_trajs(opt.data_root_dir, opt.clean_traj_dir, start_time, end_time, mbr_coords, max_speed, max_time_interval_min,
