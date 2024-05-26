@@ -22,7 +22,7 @@ nohup python -u chengdu_by_id.py > csv2txt.txt 2>&1 &
 # 定义输入CSV文件夹路径
 input_folder = "chengdu_csv"
 # 定义输出文件夹路径
-output_folder = "chengdu"
+output_folder = "Chengdu_by_id"
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
@@ -48,7 +48,7 @@ def process_trajectory_points(trajectory):
 def write_user_trajectories(output_folder, uid_trajectories):
     """将每个UID及其轨迹序列写入TXT文件"""
     for uid, trajectories in uid_trajectories.items():
-        user_file_path = os.path.join(output_folder, f"user_{uid}.txt")
+        user_file_path = os.path.join(output_folder, f"{uid}.txt")
         with open(user_file_path, 'w') as user_file:
             for trajectory_points in trajectories:
                 for point in trajectory_points:

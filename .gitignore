@@ -1,0 +1,9 @@
+data/csv_data/*
+data/raw_data/*
+data/cleaned_data/*
+data/mm_data/*
+data/map/*
+data/RNTraj/*
+
+__pycache__/
+*.txt
