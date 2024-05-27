@@ -41,7 +41,7 @@ public:
 class Traj {
 public:
     vector<Point> path;
-} t[150000];
+} t[500000];
 
 class Score {
 public:
@@ -79,7 +79,7 @@ int n, m, k;
 double maxLon, maxLat;
 double minLon, minLat;
 list<set<int>> Candidates;
-list<int> ans[150000];
+list<int> ans[500000];
 map<pair<int, int>, pair<double, double>> shortestDistPair;
 int gridWidth, gridHeight;
 double gridSize;

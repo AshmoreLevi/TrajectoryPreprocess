@@ -1,8 +1,8 @@
 """
-nohup python -u hmm.py > hmm_0504.txt 2>&1 &
+nohup python -u hmm.py > hmm_0527_Chengdu.txt 2>&1 &
 """
 
-city = "Porto"
+city = "Chengdu"
 map_root = f"../data/RNTraj/RoadNetwork/{city}_RN/"
 import sys
 sys.path.append('../')
@@ -10,21 +10,19 @@ sys.path.append('../')
 from map import RoadNetworkMap
 
 if city == "Chengdu":
-    road_map = RoadNetworkMap(map_root,zone_range=[30.655347, 104.039711, 30.730157, 104.127151], unit_length=50)
+    road_map = RoadNetworkMap(map_root,zone_range=(30.655, 104.043, 30.727, 104.129), unit_length=50)
 elif city == "Tdrive":
     road_map = RoadNetworkMap(map_root,zone_range=[39.9049, 116.3255, 39.9500, 116.4331], unit_length=50)
 elif city == "Porto":
-    road_map = RoadNetworkMap(map_root,zone_range=[41.142, -8.652, 41.174, -8.578], unit_length=50)
-
-if city == "Tdrive":
+    road_map = RoadNetworkMap(map_root,zone_range=(41.142, -8.652, 41.174, -8.578), unit_length=50)
+    
+# the region of map-matching should be larger than map area
+if city == "Chengdu":
+    zone_range = (30.655, 104.043, 30.727, 104.129)
+elif city == "Tdrive":
     zone_range = [39.9000, 116.3000, 39.9600, 116.4500]
-    epsilon = 30
-elif city == "Chengdu":
-    zone_range = [30.655347, 104.039711, 30.730157, 104.127151]
-    epsilon = 12
 elif city == "Porto":
-    zone_range = [41.142, -8.652, 41.174, -8.578]
-    epsilon = 15
+    zone_range = [41.1, -8.7, 41.2, -8.5]
 
 edgeOSM = f"../data/RNTraj/RoadNetwork/{city}_RN/edgeOSM.txt"
 nodeOSM = f"../data/RNTraj/RoadNetwork/{city}_RN/nodeOSM.txt"

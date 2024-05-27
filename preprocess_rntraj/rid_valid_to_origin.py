@@ -8,12 +8,14 @@ sys.path.append('../')
 sys.path.append('../../')
 from map import RoadNetworkMap
 
-city = 'Porto'
+city = 'Chengdu'
 
 map_root = f'../data/RNTraj/RoadNetwork/{city}_RN'
 
 if city == "Porto":
     road_map = RoadNetworkMap(map_root, zone_range=[41.142, -8.652, 41.174, -8.578], unit_length=50)
+elif city =='Chengdu':
+    road_map = RoadNetworkMap(map_root, zone_range=[30.655, 104.043, 30.727, 104.129], unit_length=50)
 elif city == "Tdrive":
     road_map = RoadNetworkMap(map_root, zone_range=[39.8451, 116.2810, 39.9890, 116.4684], unit_length=50)
 
@@ -107,7 +109,7 @@ def transform_trajectory(input_file, output_file):
 
 # 定义输入文件名和输出文件名data/RNTraj/A2C_hmmed_traj/
 input_file = f"../data/RNTraj/A2C_hmmed_traj/{city}/test_output_8.txt"
-output_dir = f"../data/RNTraj/A2C_hmmed_traj/Porto_HMM"
+output_dir = f"../data/RNTraj/A2C_hmmed_traj/{city}_HMM"
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)

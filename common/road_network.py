@@ -179,28 +179,21 @@ def load_rn_shp(path, is_directed=True):
     else:
         return RoadNetwork(g, edge_spatial_idx, edge_idx)
 
-def process_and_save_rn(path, mbr, root_dir, is_directed=True):
+def process_and_save_rn(path, root_dir, is_directed=True):
     # 创建空间索引和边索引
     edge_spatial_idx = Rtree()
     edge_idx = {}
-    res_dict = {}
-    raw2rn_dict = {}
-    rn2raw_dict = {}
+    rn_dict = {}
     raw_rn_dict = {}
-    valid_edge_count = 0
-    
+    raw2new_dict = {}
+    new2raw_dict = {}
+ 
     # 从shapefile中读取图形
     g = nx.read_shp(path, simplify=True, strict=False)
     if not is_directed:
         g = g.to_undirected()
 
     # 遍历节点和边
-    for n, data in g.nodes(data=True):
-        # 将坐标作为节点属性
-        data['pt'] = SPoint(n[1], n[0])
-        if 'ShpName' in data:
-            del data['ShpName']
-            
     for u, v, data in g.edges(data=True):
         # 从Wkb数据中创建几何线
         geom_line = ogr.CreateGeometryFromWkb(data['Wkb'])
@@ -229,14 +222,14 @@ def process_and_save_rn(path, mbr, root_dir, is_directed=True):
 
         # 存储边信息
         eid = data['eid']
-        res_dict[eid] = {
+        rn_dict[eid] = {
             'coords': res_coords,
             'length': data['length'],
             'level': data['level']
         }
 
         # 存储原始边信息
-        raw_rn_dict[eid] = res_dict[eid]
+        raw_rn_dict[eid] = rn_dict[eid]
         
         # 删除不必要的数据
         del data['ShpName']
@@ -244,49 +237,35 @@ def process_and_save_rn(path, mbr, root_dir, is_directed=True):
         del data['Wkt']
         del data['Wkb']
 
-    # 创建原始路网对象
-    if not is_directed:
-        rn_raw = UndirRoadNetwork(g, edge_spatial_idx, edge_idx)
-    else:
-        rn_raw = RoadNetwork(g, edge_spatial_idx, edge_idx)
-
-    # 获取有效边（在空间范围内）
-    valid_edges = rn_raw.valid_edge(mbr=mbr)
-    
-    # 创建有效边的字典
-    valid_res_dict = {}
-    for valid_edge_id in valid_edges:
-        raw_edge_id = valid_edge_id
-        valid_edge_data = res_dict[raw_edge_id]
-        valid_res_dict[valid_edge_count] = valid_edge_data
-        
-        # 创建映射
-        raw2rn_dict[raw_edge_id] = valid_edge_count
-        rn2raw_dict[valid_edge_count] = raw_edge_id
-        
-        valid_edge_count += 1
+    # 重排 eid，创建新旧 eid 映射
+    new_eid = 1
+    for old_eid in sorted(raw_rn_dict.keys()):
+        new2raw_dict[new_eid] = old_eid
+        raw2new_dict[old_eid] = new_eid
+        rn_dict[new_eid] = rn_dict.pop(old_eid)  # 更改键为连续的数字
+        new_eid += 1
     
     # 构建文件路径
-    valid_rn_dict_path = os.path.join(root_dir, 'valid_rn_dict.json')
+    rn_dict_path = os.path.join(root_dir, 'rn_dict.json')
     raw_rn_dict_path = os.path.join(root_dir, 'raw_rn_dict.json')
-    raw2rn_dict_path = os.path.join(root_dir, 'raw2rn_dict.json')
-    rn2raw_dict_path = os.path.join(root_dir, 'rn2raw_dict.json')
+    raw2new_dict_path = os.path.join(root_dir, 'raw2new_rid.json')
+    new2raw_dict_path = os.path.join(root_dir, 'new2raw_rid.json')
 
     # 将有效边字典写入JSON文件
-    with open(valid_rn_dict_path, 'w') as f:
-        json.dump(valid_res_dict, f)
+    with open(rn_dict_path, 'w') as f:
+        json.dump(rn_dict, f)
 
     # 将原始边字典写入JSON文件
     with open(raw_rn_dict_path, 'w') as f:
         json.dump(raw_rn_dict, f)
     
     # 将原始边到有效边的映射写入JSON文件
-    with open(raw2rn_dict_path, 'w') as f:
-        json.dump(raw2rn_dict, f)
+    with open(raw2new_dict_path, 'w') as f:
+        json.dump(raw2new_dict, f)
     
     # 将有效边到原始边的映射写入JSON文件
-    with open(rn2raw_dict_path, 'w') as f:
-        json.dump(rn2raw_dict, f)
+    with open(new2raw_dict_path, 'w') as f:
+        json.dump(new2raw_dict, f)
     
     print('# of nodes:{}'.format(g.number_of_nodes()))
     print('# of edges:{}'.format(g.number_of_edges()))

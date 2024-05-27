@@ -1,9 +1,24 @@
 data/csv_data/*
+!data/csv_data/.gitkeep
+
 data/raw_data/*
+!data/raw_data/.gitkeep
+
 data/cleaned_data/*
+!data/cleaned_data/.gitkeep
+
 data/mm_data/*
+!data/mm_data/.gitkeep
+
+data/final_data/*
+!data/final_data/.gitkeep
+
 data/map/*
+!data/map/.gitkeep
+
 data/RNTraj/*
+!data/RNTraj/.gitkeep
 
 __pycache__/
 *.txt
+*.csv

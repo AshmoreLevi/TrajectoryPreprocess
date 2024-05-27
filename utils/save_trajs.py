@@ -77,7 +77,8 @@ class SaveTraj2MM(SaveTraj):
 
     def store(self, trajs, target_path):
         time_format = '%Y/%m/%d %H:%M:%S'
-        with open(target_path, 'w') as f:
+        
+        with open(target_path, 'a') as f: # when split Porto use 'a' to write in
             for traj in trajs:
                 pt_list = traj.pt_list
                 tid = get_tid(traj.oid, pt_list)

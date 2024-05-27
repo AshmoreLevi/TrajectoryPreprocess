@@ -1,8 +1,8 @@
 """
-nohup python -u project_trajectory.py > project_porto_0504.txt 2>&1 &
+nohup python -u project_trajectory.py > project_0527_Chengdu.txt 2>&1 &
 """
 
-city = "Porto"
+city = "Chengdu"
 data_root = f"../data/RNTraj/A2C_hmmed_traj/{city}_HMM"
 map_root = f"../data/RNTraj/RoadNetwork/{city}_RN"
 
@@ -13,6 +13,8 @@ from map import RoadNetworkMap
 
 if city == "Porto":
     road_map = RoadNetworkMap(map_root, zone_range=[41.142, -8.652, 41.174, -8.578], unit_length=50)
+elif city =='Chengdu':
+    road_map = RoadNetworkMap(map_root, zone_range=[30.655, 104.043, 30.727, 104.129], unit_length=50)
 elif city == "Tdrive":
     road_map = RoadNetworkMap(map_root,zone_range=[39.8451, 116.2810, 39.9890, 116.4684], unit_length=50)
 
